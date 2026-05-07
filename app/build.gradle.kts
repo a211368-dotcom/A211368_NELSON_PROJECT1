@@ -4,11 +4,11 @@ plugins {
 }
 
 android {
-    namespace = "com.example.a211368_nelson_lab4"
+    namespace = "com.example.a211368_nelson_project1"
     compileSdk = 36
 
     defaultConfig {
-        applicationId = "com.example.a211368_nelson_lab4"
+        applicationId = "com.example.a211368_nelson_project1"
         minSdk = 24
         targetSdk = 36
         versionCode = 1
@@ -54,4 +54,5 @@ dependencies {
     debugImplementation(libs.androidx.compose.ui.test.manifest)
     implementation("androidx.navigation:navigation-compose:2.7.7")
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.6.2")
+    implementation("io.coil-kt:coil-compose:2.6.0")
 }

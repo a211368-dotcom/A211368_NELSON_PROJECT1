@@ -1,4 +1,4 @@
-package com.example.a211368_nelson_lab4.screen
+package com.example.a211368_nelson_project1.screen
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -14,13 +14,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.example.a211368_nelson_lab4.ui.theme.A211368_NELSON_LAB4Theme
-import com.example.a211368_nelson_lab4.viewmodel.LabViewModel
+import com.example.a211368_nelson_project1.viewmodel.LabViewModel
 
-// 🌸 DATA MODEL
+// data model
 data class ExperimentDetail(
     val title: String,
     val description: String,
@@ -29,7 +28,7 @@ data class ExperimentDetail(
     val steps: String
 )
 
-// 🌸 DATA SOURCE
+// data source
 fun getExperimentDetail(name: String): ExperimentDetail {
     return when (name) {
 
@@ -83,15 +82,12 @@ fun DetailScreen(
     onNext: () -> Unit = {}
 ) {
 
-    val experimentName = viewModel.userData.experiment
-    val detail = getExperimentDetail(experimentName)
+    val detail = getExperimentDetail(viewModel.userData.experiment)
 
-    var note by remember { mutableStateOf("") }
-
-    val gradient = Brush.verticalGradient(
-        listOf(
-            MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.7f),
-            MaterialTheme.colorScheme.secondaryContainer.copy(alpha = 0.4f),
+    val bgGradient = Brush.verticalGradient(
+        colors = listOf(
+            MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.35f),
+            MaterialTheme.colorScheme.secondaryContainer.copy(alpha = 0.25f),
             MaterialTheme.colorScheme.surface
         )
     )
@@ -99,26 +95,25 @@ fun DetailScreen(
     Column(
         modifier = modifier
             .fillMaxSize()
-            .background(gradient)
+            .background(bgGradient)
             .padding(20.dp)
     ) {
 
-        // 🔙 HEADER
+        // HEADER
         Row(
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.padding(top = 10.dp, bottom = 20.dp)
+            verticalAlignment = Alignment.CenterVertically
         ) {
 
             IconButton(
                 onClick = onBack,
                 modifier = Modifier
-                    .clip(CircleShape)
-                    .background(MaterialTheme.colorScheme.surface.copy(alpha = 0.8f))
+                    .clip(RoundedCornerShape(14.dp))
+                    .background(MaterialTheme.colorScheme.surface)
             ) {
                 Icon(
                     Icons.Default.ArrowBack,
                     contentDescription = null,
-                    tint = MaterialTheme.colorScheme.onSurface
+                    tint = MaterialTheme.colorScheme.primary
                 )
             }
 
@@ -126,105 +121,108 @@ fun DetailScreen(
 
             Column {
                 Text(
-                    text = "Experiment Detail",
-                    style = MaterialTheme.typography.titleLarge.copy(
-                        fontWeight = FontWeight.Bold
-                    ),
-                    color = MaterialTheme.colorScheme.onBackground
+                    "Experiment Detail",
+                    style = MaterialTheme.typography.titleLarge,
+                    fontWeight = FontWeight.Bold
                 )
 
                 Text(
-                    text = detail.description,
-                    style = MaterialTheme.typography.labelMedium,
-                    color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.6f)
+                    detail.description,
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
         }
 
-        // 🌟 MAIN CARD
+        Spacer(modifier = Modifier.height(18.dp))
+
+        // MAIN CARD
         Card(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(bottom = 20.dp),
-            shape = RoundedCornerShape(24.dp),
+            shape = RoundedCornerShape(26.dp),
             colors = CardDefaults.cardColors(
                 containerColor = MaterialTheme.colorScheme.surface
             ),
-            elevation = CardDefaults.cardElevation(6.dp)
+            elevation = CardDefaults.cardElevation(6.dp),
+            modifier = Modifier.fillMaxWidth()
         ) {
 
             Column(modifier = Modifier.padding(20.dp)) {
 
                 Row(verticalAlignment = Alignment.CenterVertically) {
 
-                    Icon(
-                        Icons.Default.School,
-                        contentDescription = null,
-                        tint = MaterialTheme.colorScheme.primary
-                    )
+                    Box(
+                        modifier = Modifier
+                            .size(44.dp)
+                            .clip(CircleShape)
+                            .background(MaterialTheme.colorScheme.primaryContainer),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Icon(
+                            Icons.Default.School,
+                            contentDescription = null,
+                            tint = MaterialTheme.colorScheme.primary
+                        )
+                    }
 
-                    Spacer(modifier = Modifier.width(10.dp))
+                    Spacer(modifier = Modifier.width(12.dp))
 
                     Text(
-                        text = detail.title,
-                        style = MaterialTheme.typography.titleLarge.copy(
-                            fontWeight = FontWeight.Bold
-                        ),
-                        color = MaterialTheme.colorScheme.onSurface
+                        detail.title,
+                        style = MaterialTheme.typography.titleLarge,
+                        fontWeight = FontWeight.Bold
                     )
                 }
 
                 Spacer(modifier = Modifier.height(16.dp))
 
-                // 📘 OBJECTIVE
-                Text("Objective", fontWeight = FontWeight.Bold)
-                Text(
-                    detail.objective,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
+                @Composable
+                fun Section(title: String, content: String) {
+                    Column(modifier = Modifier.padding(bottom = 12.dp)) {
 
-                Spacer(modifier = Modifier.height(10.dp))
+                        Text(
+                            title,
+                            fontWeight = FontWeight.Bold,
+                            color = MaterialTheme.colorScheme.primary
+                        )
 
-                // 🧪 MATERIALS
-                Text("Materials", fontWeight = FontWeight.Bold)
-                Text(
-                    detail.materials,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
+                        Spacer(modifier = Modifier.height(4.dp))
 
-                Spacer(modifier = Modifier.height(10.dp))
+                        Text(
+                            content,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
+                }
 
-                // 🔬 STEPS
-                Text("Steps", fontWeight = FontWeight.Bold)
-                Text(
-                    detail.steps,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
+                Section("Objective", detail.objective)
+                Section("Materials", detail.materials)
+                Section("Steps", detail.steps)
 
-                Spacer(modifier = Modifier.height(16.dp))
-
-                Spacer(modifier = Modifier.height(16.dp))
+                Spacer(modifier = Modifier.height(12.dp))
 
                 Button(
                     onClick = onNext,
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(50.dp),
+                        .height(52.dp),
                     shape = RoundedCornerShape(16.dp)
                 ) {
-                    Text("Continue")
+                    Text("Continue", fontWeight = FontWeight.Bold)
                 }
             }
         }
 
-        // 💡 TIPS
+        Spacer(modifier = Modifier.height(16.dp))
+
+        // TIPS CARD
         Card(
-            modifier = Modifier.fillMaxWidth(),
-            shape = RoundedCornerShape(20.dp),
+            shape = RoundedCornerShape(22.dp),
             colors = CardDefaults.cardColors(
                 containerColor = MaterialTheme.colorScheme.secondaryContainer.copy(alpha = 0.5f)
-            )
+            ),
+            modifier = Modifier.fillMaxWidth()
         ) {
+
             Column(modifier = Modifier.padding(16.dp)) {
 
                 Row(verticalAlignment = Alignment.CenterVertically) {
@@ -238,21 +236,18 @@ fun DetailScreen(
                     Spacer(modifier = Modifier.width(10.dp))
 
                     Text(
-                        text = "Tips",
-                        style = MaterialTheme.typography.titleMedium.copy(
-                            fontWeight = FontWeight.Bold
-                        )
+                        "Tips",
+                        fontWeight = FontWeight.Bold
                     )
                 }
 
                 Spacer(modifier = Modifier.height(8.dp))
 
                 Text(
-                    text = "• Be clear and concise\n• Include observations\n• Write conclusion based on results",
+                    "• Be clear and concise\n• Include observations\n• Write conclusion based on results",
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
         }
     }
 }
-

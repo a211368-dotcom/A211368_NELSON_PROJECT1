@@ -1,6 +1,7 @@
-package com.example.a211368_nelson_lab4.screen
+package com.example.a211368_nelson_project1.screen
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -8,6 +9,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -40,7 +42,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import com.example.a211368_nelson_lab4.viewmodel.LabViewModel
+import com.example.a211368_nelson_project1.viewmodel.LabViewModel
 import kotlinx.coroutines.launch
 
 
@@ -54,19 +56,18 @@ fun ExperimentOverview(
 
     var note by remember { mutableStateOf("") }
 
-    // ✅ Snackbar
     val snackbarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
 
-    val gradient = Brush.verticalGradient(
+    val pastelBg = Brush.verticalGradient(
         colors = listOf(
-            MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.7f),
-            MaterialTheme.colorScheme.secondaryContainer.copy(alpha = 0.4f),
+            MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.5f),
+            MaterialTheme.colorScheme.secondaryContainer.copy(alpha = 0.35f),
+            MaterialTheme.colorScheme.tertiaryContainer.copy(alpha = 0.25f),
             MaterialTheme.colorScheme.surface
         )
     )
 
-    // ✅ Scaffold untuk Snackbar
     Scaffold(
         snackbarHost = { SnackbarHost(snackbarHostState) }
     ) { padding ->
@@ -74,26 +75,26 @@ fun ExperimentOverview(
         Column(
             modifier = modifier
                 .fillMaxSize()
-                .background(gradient)
+                .background(pastelBg)
                 .padding(20.dp)
                 .padding(padding)
         ) {
 
-            // 🔙 HEADER
             Row(
                 verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.padding(top = 10.dp, bottom = 20.dp)
+                modifier = Modifier.padding(top = 10.dp, bottom = 22.dp)
             ) {
 
                 IconButton(
                     onClick = onBack,
                     modifier = Modifier
-                        .clip(CircleShape)
-                        .background(MaterialTheme.colorScheme.surface.copy(alpha = 0.8f))
+                        .clip(RoundedCornerShape(14.dp))
+                        .background(MaterialTheme.colorScheme.surface.copy(alpha = 0.9f))
                 ) {
                     Icon(
                         Icons.Default.ArrowBack,
-                        contentDescription = null
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.primary
                     )
                 }
 
@@ -101,73 +102,85 @@ fun ExperimentOverview(
 
                 Column {
                     Text(
-                        text = "Experiment Detail",
-                        style = MaterialTheme.typography.titleLarge.copy(
-                            fontWeight = FontWeight.Bold
-                        )
+                        text = "Experiment Journal",
+                        style = MaterialTheme.typography.headlineSmall,
+                        fontWeight = FontWeight.Bold
                     )
 
                     Text(
-                        text = "Write your notes & submit",
-                        style = MaterialTheme.typography.labelMedium
+                        text = "Write your notes & reflect",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 }
             }
 
-            // 🌟 MAIN CARD
             Card(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(bottom = 20.dp),
-                shape = RoundedCornerShape(24.dp),
-                elevation = CardDefaults.cardElevation(6.dp)
+                modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(26.dp),
+                colors = CardDefaults.cardColors(
+                    containerColor = MaterialTheme.colorScheme.surface
+                ),
+                elevation = CardDefaults.cardElevation(8.dp)
             ) {
 
-                Column(modifier = Modifier.padding(20.dp)) {
+                Column(modifier = Modifier.padding(22.dp)) {
 
                     Row(verticalAlignment = Alignment.CenterVertically) {
 
-                        Icon(
-                            Icons.Default.School,
-                            contentDescription = null,
-                            tint = MaterialTheme.colorScheme.primary
-                        )
+                        Box(
+                            modifier = Modifier
+                                .size(42.dp)
+                                .clip(CircleShape)
+                                .background(MaterialTheme.colorScheme.primaryContainer),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Icon(
+                                Icons.Default.School,
+                                contentDescription = null,
+                                tint = MaterialTheme.colorScheme.primary
+                            )
+                        }
 
-                        Spacer(modifier = Modifier.width(10.dp))
+                        Spacer(modifier = Modifier.width(12.dp))
 
                         Text(
                             text = viewModel.userData.experiment,
-                            style = MaterialTheme.typography.titleMedium.copy(
-                                fontWeight = FontWeight.Bold
-                            )
+                            style = MaterialTheme.typography.titleMedium,
+                            fontWeight = FontWeight.Bold
                         )
                     }
 
-                    Spacer(modifier = Modifier.height(12.dp))
+                    Spacer(modifier = Modifier.height(14.dp))
 
                     Text(
-                        text = "Write your observation and conclusion.",
-                        style = MaterialTheme.typography.bodyMedium
+                        text = "Write your observation and conclusion in your own words.",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
 
                     Spacer(modifier = Modifier.height(16.dp))
 
-                    // ✏️ NOTE INPUT
                     OutlinedTextField(
                         value = note,
                         onValueChange = {
                             note = it
-                            viewModel.updateNote(note) // ✅ auto save
+                            viewModel.updateNote(note)
                         },
-                        placeholder = { Text("Enter your experiment notes...") },
+                        placeholder = { Text("Type your experiment notes here...") },
                         modifier = Modifier.fillMaxWidth(),
-                        shape = RoundedCornerShape(16.dp),
-                        minLines = 4
+                        shape = RoundedCornerShape(18.dp),
+                        minLines = 4,
+                        colors = OutlinedTextFieldDefaults.colors(
+                            focusedBorderColor = MaterialTheme.colorScheme.primary,
+                            unfocusedBorderColor = MaterialTheme.colorScheme.outlineVariant,
+                            focusedContainerColor = MaterialTheme.colorScheme.surface,
+                            unfocusedContainerColor = MaterialTheme.colorScheme.surface
+                        )
                     )
 
-                    Spacer(modifier = Modifier.height(16.dp))
+                    Spacer(modifier = Modifier.height(18.dp))
 
-                    // 🚀 BUTTON
                     Button(
                         onClick = {
                             if (note.isNotBlank()) {
@@ -176,7 +189,7 @@ fun ExperimentOverview(
 
                                 scope.launch {
                                     snackbarHostState.showSnackbar(
-                                        "Notes submitted successfully 🎉"
+                                        "Saved successfully "
                                     )
                                 }
 
@@ -185,7 +198,7 @@ fun ExperimentOverview(
                             } else {
                                 scope.launch {
                                     snackbarHostState.showSnackbar(
-                                        "Please enter your notes first ⚠️"
+                                        "Please write something first"
                                     )
                                 }
                             }
@@ -193,48 +206,49 @@ fun ExperimentOverview(
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(52.dp),
-                        shape = RoundedCornerShape(16.dp)
-                    ) {
-                        Text(
-                            "Submit & Continue",
-                            fontWeight = FontWeight.Bold
+                        shape = RoundedCornerShape(18.dp),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = MaterialTheme.colorScheme.primary
                         )
+                    ) {
+                        Text("Submit & Continue", fontWeight = FontWeight.Bold)
                     }
                 }
             }
 
-            // 📦 INFO CARD
+            Spacer(modifier = Modifier.height(16.dp))
+
             Card(
                 modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(20.dp),
+                shape = RoundedCornerShape(22.dp),
                 colors = CardDefaults.cardColors(
                     containerColor = MaterialTheme.colorScheme.secondaryContainer.copy(alpha = 0.5f)
                 )
             ) {
+
                 Column(modifier = Modifier.padding(16.dp)) {
 
                     Row(verticalAlignment = Alignment.CenterVertically) {
 
                         Icon(
                             Icons.Default.Description,
-                            contentDescription = null
+                            contentDescription = null,
+                            tint = MaterialTheme.colorScheme.primary
                         )
 
                         Spacer(modifier = Modifier.width(10.dp))
 
                         Text(
                             text = "Tips",
-                            style = MaterialTheme.typography.titleMedium.copy(
-                                fontWeight = FontWeight.Bold
-                            )
+                            fontWeight = FontWeight.Bold
                         )
                     }
 
                     Spacer(modifier = Modifier.height(8.dp))
 
                     Text(
-                        text = "• Be clear and concise\n• Include observations\n• Write conclusion",
-                        style = MaterialTheme.typography.bodyMedium
+                        text = "• Be clear and structured\n• Include observations\n• Write conclusion based on result",
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 }
             }

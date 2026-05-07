@@ -1,4 +1,4 @@
-package com.example.a211368_nelson_lab4.screen
+package com.example.a211368_nelson_project1.screen
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.expandVertically
@@ -61,10 +61,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.rememberNavController
-import com.example.a211368_nelson_lab4.BottomNavigationBar
-import com.example.a211368_nelson_lab4.CategorySection
-import com.example.a211368_nelson_lab4.ui.theme.A211368_NELSON_LAB4Theme
-import com.example.a211368_nelson_lab4.viewmodel.LabViewModel
+import com.example.a211368_nelson_project1.viewmodel.LabViewModel
+import com.example.a211368_nelson_project1.BottomNavigationBar
+import com.example.a211368_nelson_project1.ui.theme.A211368_NELSON_PROJECT1Theme
 
 @Composable
 fun HomeScreen(
@@ -103,7 +102,7 @@ fun HomeScreen(
             .padding(horizontal = 20.dp)
     ) {
 
-        // 🌈 HEADER (same vibe as ClassScreen)
+        // header lab quest
         item {
 
             val gradient = Brush.verticalGradient(
@@ -129,6 +128,7 @@ fun HomeScreen(
 
                     Column {
 
+                        //icon theme
                         Row(
                             modifier = Modifier.fillMaxWidth(),
                             horizontalArrangement = Arrangement.End
@@ -148,19 +148,21 @@ fun HomeScreen(
                             text = if (isSubmitted) "Welcome, $inputName" else "LabQuest",
                             style = MaterialTheme.typography.headlineMedium.copy(
                                 fontWeight = FontWeight.Bold
-                            )
+                            ),
+                                    color = MaterialTheme.colorScheme.onPrimaryContainer
                         )
 
                         Text(
                             text = "Science Experiment Class",
-                            style = MaterialTheme.typography.labelMedium
+                            style = MaterialTheme.typography.labelMedium,
+                                    color = MaterialTheme.colorScheme.onPrimaryContainer
                         )
                     }
                 }
             }
         }
 
-        // ✏️ NAME INPUT CARD
+        // name input text field
         item {
             AnimatedVisibility(visible = !isSubmitted) {
 
@@ -168,7 +170,7 @@ fun HomeScreen(
                     modifier = Modifier.fillMaxWidth(),
                     shape = RoundedCornerShape(20.dp),
                     colors = CardDefaults.cardColors(
-                        containerColor = MaterialTheme.colorScheme.tertiaryContainer
+                        containerColor = MaterialTheme.colorScheme.surface
                     )
                 ) {
 
@@ -215,7 +217,7 @@ fun HomeScreen(
             Spacer(modifier = Modifier.height(20.dp))
         }
 
-        // 📚 CATEGORY HEADER
+        // category header
         item {
             Text(
                 text = "Experiment Categories",
@@ -226,11 +228,12 @@ fun HomeScreen(
             )
         }
 
-        // 🧪 CHEMISTRY
+        // chemistry section
         item {
             SimpleCategoryCard(
                 title = "Chemistry",
                 color = MaterialTheme.colorScheme.primaryContainer,
+                contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
                 items = chemistry,
                 onClick = onExperimentClick
             )
@@ -238,11 +241,12 @@ fun HomeScreen(
 
         item { Spacer(modifier = Modifier.height(12.dp)) }
 
-        // ⚡ PHYSICS
+        // physics
         item {
             SimpleCategoryCard(
                 title = "Physics",
                 color = MaterialTheme.colorScheme.secondaryContainer,
+                contentColor = MaterialTheme.colorScheme.onSecondaryContainer,
                 items = physics,
                 onClick = onExperimentClick
             )
@@ -250,11 +254,12 @@ fun HomeScreen(
 
         item { Spacer(modifier = Modifier.height(12.dp)) }
 
-        // 🌱 BIOLOGY
+        // biology
         item {
             SimpleCategoryCard(
                 title = "Biology",
                 color = MaterialTheme.colorScheme.tertiaryContainer,
+                contentColor = MaterialTheme.colorScheme.onTertiaryContainer,
                 items = biology,
                 onClick = onExperimentClick
             )
@@ -268,6 +273,7 @@ fun HomeScreen(
 fun SimpleCategoryCard(
     title: String,
     color: Color,
+    contentColor: Color,
     items: List<Pair<String, String>>,
     onClick: (String) -> Unit
 ) {
@@ -286,10 +292,10 @@ fun SimpleCategoryCard(
 
                 Text(
                     text = title,
+                    color = contentColor,
                     modifier = Modifier.weight(1f),
                     style = MaterialTheme.typography.titleMedium.copy(
-                        fontWeight = FontWeight.Bold,
-                        color = MaterialTheme.colorScheme.onPrimaryContainer
+                        fontWeight = FontWeight.Bold
                     )
                 )
 
@@ -299,7 +305,7 @@ fun SimpleCategoryCard(
                             Icons.Default.ExpandLess
                         else Icons.Default.ExpandMore,
                         contentDescription = null,
-                        tint = MaterialTheme.colorScheme.onSurfaceVariant
+                        tint = contentColor
                     )
                 }
             }
@@ -333,12 +339,14 @@ fun SimpleCategoryCard(
 
                                 Text(
                                     text = name,
-                                    fontWeight = FontWeight.Bold
+                                    fontWeight = FontWeight.Bold,
+                                    color = MaterialTheme.colorScheme.onSurface
                                 )
 
                                 Text(
                                     text = desc,
-                                    style = MaterialTheme.typography.bodySmall
+                                    style = MaterialTheme.typography.bodySmall,
+                                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.8f)
                                 )
                             }
                         }

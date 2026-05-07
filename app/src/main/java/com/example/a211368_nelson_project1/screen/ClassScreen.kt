@@ -1,11 +1,14 @@
-package com.example.a211368_nelson_lab4.screen
+package com.example.a211368_nelson_project1.screen
 
+import android.R.attr.elevation
+import android.R.attr.shape
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -28,16 +31,19 @@ import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Eco
 import androidx.compose.material.icons.filled.ExpandLess
 import androidx.compose.material.icons.filled.ExpandMore
+import androidx.compose.material.icons.filled.FlashOn
 import androidx.compose.material.icons.filled.MenuBook
 import androidx.compose.material.icons.filled.Science
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CheckboxDefaults.colors
 import androidx.compose.material3.Divider
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.ListItemDefaults.contentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
@@ -61,17 +67,18 @@ import androidx.compose.ui.unit.sp
 import androidx.core.graphics.component1
 import androidx.core.graphics.component2
 import androidx.navigation.compose.rememberNavController
-import com.example.a211368_nelson_lab4.BottomNavigationBar
-import com.example.a211368_nelson_lab4.ui.theme.A211368_NELSON_LAB4Theme
+import com.example.a211368_nelson_project1.BottomNavigationBar
+import com.example.a211368_nelson_project1.ui.theme.A211368_NELSON_PROJECT1Theme
 
 @Composable
 fun ClassScreen(
     modifier: Modifier = Modifier,
-    onBack: () -> Unit = {}
+    onBack: () -> Unit = {},
+    onClassClick: (String, String, String) -> Unit = { _, _, _ -> }
 ) {
     // Data kelas dengan ikon yang berbeza untuk setiap subjek
     val classes = listOf(
-        ClassItem("Physics 4 Zamrud", "Teacher Aisyah, 9 a.m., Tuesday.", Icons.Default.Science),
+        ClassItem("Physics 4 Zamrud", "Teacher Aisyah, 9 a.m., Tuesday.", Icons.Default.FlashOn),
         ClassItem("Biology 5 Utarid", "Sir Zakir, 2 p.m., Thursday.", Icons.Default.Eco),
         ClassItem("Chemistry 4 Zamrud", "Madam Mariam, 10 a.m., Friday.", Icons.Default.Science)
     )
@@ -81,20 +88,26 @@ fun ClassScreen(
     LazyColumn(
         modifier = modifier
             .fillMaxSize()
-            .background(MaterialTheme.colorScheme.surface) // Latar belakang bersih
+            .background(MaterialTheme.colorScheme.surface)
             .padding(horizontal = 20.dp)
     ) {
-        // 🔙 HEADER
+        // HEADER
         item {
             Row(
                 verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.padding(top = 20.dp, bottom = 24.dp)
+                modifier = Modifier.background(
+                    MaterialTheme.colorScheme.surface,
+                    CircleShape
+                )
             ) {
                 IconButton(
                     onClick = onBack,
-                    modifier = Modifier.background(Color.White, CircleShape) // Efek neumorphic ringkas
+                    modifier = Modifier.
+                    background(Color.White, CircleShape)
                 ) {
-                    Icon(Icons.Default.ArrowBack, contentDescription = "Back")
+                    Icon(Icons.Default.ArrowBack,
+                        contentDescription = "Back",
+                        tint = Color.Black)
                 }
                 Spacer(modifier = Modifier.width(12.dp))
                 Text(
@@ -107,7 +120,7 @@ fun ClassScreen(
             }
         }
 
-        // 🧾 JOIN CLASS CARD
+        // join class card
         item {
             Card(
                 modifier = Modifier
@@ -129,13 +142,14 @@ fun ClassScreen(
                     OutlinedTextField(
                         value = classCode,
                         onValueChange = { classCode = it },
-                        placeholder = { Text("Enter Class Code", color = Color.Gray) },
+                        placeholder = { Text("Enter Class Code",
+                            color = MaterialTheme.colorScheme.onSurfaceVariant) },
                         modifier = Modifier.fillMaxWidth(),
                         shape = RoundedCornerShape(16.dp),
                         singleLine = true,
                         colors = OutlinedTextFieldDefaults.colors(
-                            unfocusedContainerColor = Color.White,
-                            focusedContainerColor = Color.White,
+                            unfocusedContainerColor = MaterialTheme.colorScheme.surface,
+                            focusedContainerColor = MaterialTheme.colorScheme.surface,
                             unfocusedBorderColor = Color.Transparent,
                             focusedBorderColor = MaterialTheme.colorScheme.primary
                         )
@@ -151,33 +165,57 @@ fun ClassScreen(
                             containerColor = Color(0xFF4F6D91) // Biru premium
                         )
                     ) {
-                        Text("Join Class", fontWeight = FontWeight.Bold)
+                        Text(
+                            "Join Class",
+                            fontWeight = FontWeight.Bold,
+                        color = contentColor
+                        )
                     }
                 }
             }
         }
 
-        // 📚 SECTION TITLE
+        // section title
         item {
             Text(
                 text = "Your Science Class",
                 style = MaterialTheme.typography.titleMedium.copy(
                     fontWeight = FontWeight.ExtraBold,
-                    color = Color.DarkGray
+                    color = MaterialTheme.colorScheme.onSurface
                 ),
                 modifier = Modifier.padding(bottom = 16.dp)
             )
         }
 
-        // 📦 CLASS LIST
+        // class list
         itemsIndexed(classes) { index, item ->
-            // Warna pastel yang berbeza untuk setiap kad
             val cardColor = when (index % 3) {
-                0 -> Color(0xFFE8DEF8) // Lavender
-                1 -> Color(0xFFF2D5D5) // Peach/Pink lembut
-                else -> Color(0xFFD1E4FF) // Biru lembut
+                0 -> MaterialTheme.colorScheme.primaryContainer
+                1 -> MaterialTheme.colorScheme.secondaryContainer
+                else -> MaterialTheme.colorScheme.tertiaryContainer
             }
-            EnhancedClassCard(item.title, item.desc, item.icon, cardColor)
+            EnhancedClassCard(
+                title = item.title,
+                description = item.desc,
+                icon = item.icon,
+                bgColor = cardColor,
+                onClick = {
+                    val iconName = when (item.icon) {
+                        Icons.Default.Eco -> "Eco"
+                        Icons.Default.Science -> "Science"
+                        else -> "FlashOn"
+                    }
+
+                    val category = when {
+                        item.title.contains("Physics") -> "Physics"
+                        item.title.contains("Biology") -> "Biology"
+                        item.title.contains("Chemistry") -> "Chemistry"
+                        else -> "Unknown"
+                    }
+
+                    onClassClick(item.title, item.desc, category)
+                }
+            )
             Spacer(modifier = Modifier.height(12.dp))
         }
 
@@ -186,22 +224,42 @@ fun ClassScreen(
 }
 
 @Composable
-fun EnhancedClassCard(title: String, description: String, icon: ImageVector, bgColor: Color) {
+fun EnhancedClassCard(
+    title: String,
+    description: String,
+    icon: ImageVector,
+    bgColor: Color,
+    onClick: () -> Unit
+)
+{
     var expanded by remember { mutableStateOf(false) }
 
+    val contentColor = when (bgColor) {
+        MaterialTheme.colorScheme.primaryContainer ->
+            MaterialTheme.colorScheme.onPrimaryContainer
+
+        MaterialTheme.colorScheme.secondaryContainer ->
+            MaterialTheme.colorScheme.onSecondaryContainer
+
+        else ->
+            MaterialTheme.colorScheme.onTertiaryContainer
+    }
+
     Card(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier
+            .fillMaxWidth()
+        .clickable { onClick() },
         shape = RoundedCornerShape(20.dp),
         colors = CardDefaults.cardColors(containerColor = bgColor),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
             Row(verticalAlignment = Alignment.CenterVertically) {
-                // Icon subjek ganti Bullet point
+
                 Icon(
                     imageVector = icon,
                     contentDescription = null,
-                    tint = Color.DarkGray,
+                    tint = contentColor,
                     modifier = Modifier.size(24.dp)
                 )
 
@@ -210,16 +268,21 @@ fun EnhancedClassCard(title: String, description: String, icon: ImageVector, bgC
                 Text(
                     text = title,
                     modifier = Modifier.weight(1f),
-                    style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Bold)
+                    style = MaterialTheme.typography.bodyLarge.copy(
+                        fontWeight = FontWeight.Bold
+                    ),
+                    color = contentColor
                 )
 
                 IconButton(
                     onClick = { expanded = !expanded },
-                    modifier = Modifier.size(32.dp).clip(CircleShape).background(Color.White.copy(alpha = 0.5f))
+                    modifier = Modifier.size(32.dp).clip(CircleShape)
+                    .background(MaterialTheme.colorScheme.surface)
                 ) {
                     Icon(
                         imageVector = if (expanded) Icons.Default.ExpandLess else Icons.Default.ExpandMore,
-                        contentDescription = null
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.onSurface
                     )
                 }
             }
@@ -231,12 +294,12 @@ fun EnhancedClassCard(title: String, description: String, icon: ImageVector, bgC
             ) {
                 Column {
                     Spacer(modifier = Modifier.height(12.dp))
-                    Divider(color = Color.White.copy(alpha = 0.5f))
+                    Divider(color = MaterialTheme.colorScheme.outlineVariant)
                     Spacer(modifier = Modifier.height(12.dp))
                     Text(
                         text = description,
                         style = MaterialTheme.typography.bodyMedium,
-                        color = Color.DarkGray
+                        color = contentColor
                     )
                 }
             }
@@ -249,7 +312,7 @@ data class ClassItem(val title: String, val desc: String, val icon: ImageVector)
 @Preview(showBackground = true)
 @Composable
 fun ClassScreenPreview() {
-    A211368_NELSON_LAB4Theme {
+    A211368_NELSON_PROJECT1Theme {
         Scaffold(
             floatingActionButton = {
                 FloatingActionButton(onClick = {}) { Text("+", fontSize = 24.sp) }

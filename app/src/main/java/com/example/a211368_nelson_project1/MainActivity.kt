@@ -1,4 +1,4 @@
-package com.example.a211368_nelson_lab4
+package com.example.a211368_nelson_project1
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -32,15 +32,19 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import com.example.a211368_nelson_lab4.data.UserData
-import com.example.a211368_nelson_lab4.ui.theme.A211368_NELSON_LAB4Theme
-import com.example.a211368_nelson_lab4.screen.ClassScreen
-import com.example.a211368_nelson_lab4.screen.DetailScreen
-import com.example.a211368_nelson_lab4.screen.HomeScreen
-import com.example.a211368_nelson_lab4.screen.LabScreen
-import com.example.a211368_nelson_lab4.screen.ProfileScreen
-import com.example.a211368_nelson_lab4.viewmodel.LabViewModel
-import com.example.a211368_nelson_lab4.screen.ExperimentOverview
+import com.example.a211368_nelson_project1.screen.DetailScreen
+import com.example.a211368_nelson_project1.screen.ExperimentOverview
+import com.example.a211368_nelson_project1.screen.HomeScreen
+import com.example.a211368_nelson_project1.screen.LabScreen
+import com.example.a211368_nelson_project1.screen.ProfileScreen
+import com.example.a211368_nelson_project1.screen.SummaryScreen
+import com.example.a211368_nelson_project1.viewmodel.LabViewModel
+import com.example.a211368_nelson_project1.data.UserData
+import com.example.a211368_nelson_project1.screen.AssignmentScreen
+import com.example.a211368_nelson_project1.ui.theme.A211368_NELSON_PROJECT1Theme
+import com.example.a211368_nelson_project1.screen.ClassScreen
+import com.example.a211368_nelson_project1.screen.ClassDetail
+import com.example.a211368_nelson_project1.screen.LoginScreen
 
 class MainActivity : ComponentActivity() {
 
@@ -52,7 +56,7 @@ class MainActivity : ComponentActivity() {
 
         setContent {
 
-            A211368_NELSON_LAB4Theme(darkTheme = darkTheme) {
+            A211368_NELSON_PROJECT1Theme(darkTheme = darkTheme) {
 
                 val navController = rememberNavController()
                 val viewModel: LabViewModel = viewModel()
@@ -61,13 +65,34 @@ class MainActivity : ComponentActivity() {
                     bottomBar = { BottomNavigationBar(navController) }
                 ) { padding ->
 
+                    val startDestination =
+                        if (viewModel.userData.name.isNotEmpty())
+                            LabScreen.Home.name
+                        else
+                            LabScreen.Login.name
+
                     NavHost(
                         navController = navController,
-                        startDestination = LabScreen.Home.name,
-                        modifier = Modifier.padding(padding)
+                        startDestination = startDestination,
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(padding)
                     ) {
 
-                        // 🌸 HOME
+                        composable(LabScreen.Login.name) {
+                            LoginScreen(
+                                onLogin = { name ->
+
+                                    viewModel.setName(name)
+
+                                    navController.navigate(LabScreen.Home.name) {
+                                        popUpTo(LabScreen.Login.name) { inclusive = true }
+                                    }
+                                }
+                            )
+                        }
+
+                        // home screen
                         composable(LabScreen.Home.name) {
                             HomeScreen(
                                 viewModel = viewModel,
@@ -82,7 +107,7 @@ class MainActivity : ComponentActivity() {
                             )
                         }
 
-                        // 📄 DETAIL
+                        // detail screen
                         composable(LabScreen.Detail.name) {
                             DetailScreen(
                                 viewModel = viewModel,
@@ -93,26 +118,82 @@ class MainActivity : ComponentActivity() {
                             )
                         }
 
+                        //experiment notes screen
                         composable(LabScreen.ExperimentOverview.name) {
                             ExperimentOverview(
                                 viewModel = viewModel,
                                 onBack = { navController.popBackStack() },
+                                onNext = {
+                                    navController.navigate("summary")
+                                }
                             )
                         }
 
-                        // 👤 PROFILE (FIXED)
+                        composable(LabScreen.Summary.name) {
+                            SummaryScreen(
+                                viewModel = viewModel,
+                                onBack = { navController.popBackStack() }
+                            )
+                        }
+
+                        //profile screen
                         composable(LabScreen.Profile.name) {
                             ProfileScreen(
+                                modifier = Modifier.fillMaxSize(),
+                                viewModel = viewModel,
                                 userName = viewModel.userData.name,
                                 isDarkTheme = darkTheme,
                                 onToggleTheme = { darkTheme = !darkTheme },
-                                onBack = { navController.popBackStack() }
-                            )
-                            }
+                                onBack = { navController.popBackStack() },
 
-                        // 📘 CLASS
+                                onLogout = {
+                                    navController.navigate(LabScreen.Login.name) {
+                                        popUpTo(0) // buang semua backstack
+                                    }
+                                }
+                            )
+                        }
+
+                        // class screen
                         composable(LabScreen.Class.name) {
                             ClassScreen(
+                                onBack = { navController.popBackStack() },
+                                onClassClick = { title, desc, category ->
+
+                                    navController.currentBackStackEntry?.savedStateHandle?.set("title", title)
+                                    navController.currentBackStackEntry?.savedStateHandle?.set("desc", desc)
+                                    navController.currentBackStackEntry?.savedStateHandle?.set("category", category)
+
+                                    navController.navigate(LabScreen.ClassDetail.name)
+                                }
+                            )
+                        }
+
+                        composable(LabScreen.ClassDetail.name) {
+                            val backStackEntry = navController.previousBackStackEntry
+                            val title = backStackEntry?.savedStateHandle?.get<String>("title") ?: ""
+                            val desc = backStackEntry?.savedStateHandle?.get<String>("desc") ?: ""
+                            val iconName = backStackEntry?.savedStateHandle?.get<String>("icon") ?: "FlashOn"
+                            val category = backStackEntry?.savedStateHandle?.get<String>("category") ?: ""
+
+                            val icon = when (iconName) {
+                                "Eco" -> Icons.Default.Eco
+                                "Science" -> Icons.Default.Science
+                                else -> Icons.Default.FlashOn
+                            }
+
+                            ClassDetail(
+                                title = title,
+                                description = desc,
+                                icon = icon,
+                                navController = navController,
+                                category = category,
+                                onBack = { navController.popBackStack() }
+                            )
+                        }
+
+                        composable(LabScreen.Assignment.name) {
+                            AssignmentScreen(
                                 onBack = { navController.popBackStack() }
                             )
                         }
@@ -125,117 +206,6 @@ class MainActivity : ComponentActivity() {
     }
 }
 
-@Composable
-fun CategorySection(
-    title: String,
-    items: Map<String, String>,
-    icon: ImageVector,
-    onExperimentClick: (String) -> Unit) {
-
-    Column {
-
- Row( //title with icon
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.padding(vertical = 10.dp)
-        ) {
-            Icon(
-                imageVector = icon,
-                contentDescription = null,
-                tint = MaterialTheme.colorScheme.primary
-            )
-
-            Spacer(modifier = Modifier.width(8.dp))
-
-            Text(
-                text = title,
-                style = MaterialTheme.typography.displayMedium,
-                color = MaterialTheme.colorScheme.onBackground
-            )
-        }
-
-        items.forEach { (item, description) ->
-            var expanded by remember { mutableStateOf(false) }
-
-            Card(  //experiment in each category
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(vertical = 6.dp)
-                    .clickable {
-                        onExperimentClick(item)
-                    }
-                    .shadow(4.dp, RoundedCornerShape(20.dp)),
-                shape = RoundedCornerShape(20.dp),
-                colors = CardDefaults.cardColors(
-                    containerColor = MaterialTheme.colorScheme.surfaceVariant
-                ),
-                border = BorderStroke(
-                    1.dp,
-                    MaterialTheme.colorScheme.outline.copy(alpha = 0.2f)
-                )
-            ) {
-
-                Column {
-
-                    // top strip
-    Box(
-      modifier = Modifier
-     .fillMaxWidth()
-     .height(4.dp)
-     .background(MaterialTheme.colorScheme.primary)
-                    )
-
-        Column(modifier = Modifier.padding(16.dp)) {
-
-        Row(verticalAlignment = Alignment.CenterVertically) {
-
-         Spacer(modifier = Modifier.width(10.dp))
-
-         Text(
-        text = item,
-        style = MaterialTheme.typography.titleMedium,
-        color = MaterialTheme.colorScheme.onSurface,
-        modifier = Modifier.weight(1f)
-                            )
-
-         IconButton(onClick = { expanded = !expanded }) {
-           Icon(
-            imageVector = if (expanded)
-            Icons.Default.ExpandLess
-              else
-            Icons.Default.ExpandMore,
-            contentDescription = null
-     )
-    }
- }
-
- AnimatedVisibility(
-  visible = expanded,
-   enter = fadeIn() + expandVertically(),
-   exit = fadeOut() + shrinkVertically()
-   ) {
-
-     Column {
-     Spacer(modifier = Modifier.height(10.dp))
-
-      Divider(
-      color = MaterialTheme.colorScheme.outline.copy(alpha = 0.2f)
-   )
-
-    Spacer(modifier = Modifier.height(10.dp))
-
-   Text(
-   text = description,
-   style = MaterialTheme.typography.bodyLarge,
-   color = MaterialTheme.colorScheme.onSurfaceVariant
-)
-}
-}
-}
-}
-}
-}
-}
-}
 
 @Composable
 fun BottomNavigationBar(navController: NavHostController) {

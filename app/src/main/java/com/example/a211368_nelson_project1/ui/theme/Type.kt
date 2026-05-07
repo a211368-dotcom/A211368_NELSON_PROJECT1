@@ -1,11 +1,11 @@
-package com.example.a211368_nelson_lab4.ui.theme
+package com.example.a211368_nelson_project1.ui.theme
 
 import androidx.compose.material3.Typography
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.sp
-import com.example.a211368_nelson_lab4.R
+import com.example.a211368_nelson_project1.R
 
 // 🌸 Fonts
 val Poppins = FontFamily(
