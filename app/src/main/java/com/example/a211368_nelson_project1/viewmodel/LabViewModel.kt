@@ -42,8 +42,22 @@ class LabViewModel : ViewModel() {
 
     fun updateNote(note: String) {
         userData = userData.copy(note = note)
-        noteHistory.add(note)
-        lastUpdated = SimpleDateFormat("dd MMM yyyy, HH:mm", Locale.getDefault()).format(Date())
+    }
+
+    fun saveNote() {
+
+        val currentNote = userData.note
+
+        if (currentNote.isNotBlank() &&
+            currentNote != noteHistory.lastOrNull()
+        ) {
+            noteHistory.add(currentNote)
+        }
+
+        lastUpdated = SimpleDateFormat(
+            "dd MMM yyyy, HH:mm",
+            Locale.getDefault()
+        ).format(Date())
     }
 
     fun submitName(name: String) {

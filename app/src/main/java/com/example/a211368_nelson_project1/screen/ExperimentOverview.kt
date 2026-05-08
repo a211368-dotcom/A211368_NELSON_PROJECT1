@@ -54,8 +54,6 @@ fun ExperimentOverview(
     onNext: () -> Unit = {}
 ) {
 
-    var note by remember { mutableStateOf("") }
-
     val snackbarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
 
@@ -162,10 +160,9 @@ fun ExperimentOverview(
                     Spacer(modifier = Modifier.height(16.dp))
 
                     OutlinedTextField(
-                        value = note,
+                        value = viewModel.userData.note,
                         onValueChange = {
-                            note = it
-                            viewModel.updateNote(note)
+                            viewModel.updateNote(it)
                         },
                         placeholder = { Text("Type your experiment notes here...") },
                         modifier = Modifier.fillMaxWidth(),
@@ -183,9 +180,8 @@ fun ExperimentOverview(
 
                     Button(
                         onClick = {
-                            if (note.isNotBlank()) {
-
-                                viewModel.updateNote(note)
+                            if (viewModel.userData.note.isNotBlank()) {
+                                viewModel.saveNote()
 
                                 scope.launch {
                                     snackbarHostState.showSnackbar(

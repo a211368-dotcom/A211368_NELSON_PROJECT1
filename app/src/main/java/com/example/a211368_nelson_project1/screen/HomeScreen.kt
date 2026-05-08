@@ -1,10 +1,12 @@
 package com.example.a211368_nelson_project1.screen
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.tween
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkVertically
+import androidx.compose.animation.slideInVertically
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -29,6 +31,7 @@ import androidx.compose.material.icons.filled.ExpandMore
 import androidx.compose.material.icons.filled.FlashOn
 import androidx.compose.material.icons.filled.LightMode
 import androidx.compose.material.icons.filled.Nature
+import androidx.compose.material.icons.filled.School
 import androidx.compose.material.icons.filled.Science
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -45,6 +48,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -157,10 +161,13 @@ fun HomeScreen(
                             style = MaterialTheme.typography.labelMedium,
                                     color = MaterialTheme.colorScheme.onPrimaryContainer
                         )
+
+
                     }
                 }
             }
         }
+
 
         // name input text field
         item {
@@ -217,6 +224,11 @@ fun HomeScreen(
             Spacer(modifier = Modifier.height(20.dp))
         }
 
+        item {
+            SDGCard()
+        }
+
+
         // category header
         item {
             Text(
@@ -266,6 +278,106 @@ fun HomeScreen(
         }
 
         item { Spacer(modifier = Modifier.height(100.dp)) }
+    }
+}
+
+@Composable
+fun SDGCard() {
+
+    var expanded by remember { mutableStateOf(false) }
+
+    Card(
+        shape = RoundedCornerShape(20.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = Color(0xFFFFD6E8) // pastel pink
+        ),
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 8.dp)
+    ) {
+
+        Column(modifier = Modifier.padding(16.dp)) {
+
+            // HEADER
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clickable { expanded = !expanded },
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+
+                Text(
+                    text = "SDG 4: Quality Education",
+                    modifier = Modifier.weight(1f),
+                    style = MaterialTheme.typography.titleMedium.copy(
+                        fontWeight = FontWeight.Bold
+                    ),
+                    color = Color(0xFF4A2C3A)
+                )
+
+                Icon(
+                    imageVector = if (expanded)
+                        Icons.Default.ExpandLess
+                    else Icons.Default.ExpandMore,
+                    contentDescription = null,
+                    tint = Color(0xFF4A2C3A)
+                )
+            }
+
+            Text(
+                text = "Interactive science learning platform for better understanding of experiments.",
+                style = MaterialTheme.typography.bodyMedium,
+                color = Color(0xFF4A2C3A).copy(alpha = 0.85f),
+                modifier = Modifier.padding(top = 6.dp)
+            )
+
+            AnimatedVisibility(
+                visible = expanded,
+                enter = fadeIn() + expandVertically(),
+                exit = fadeOut() + shrinkVertically()
+            ) {
+
+                Column(modifier = Modifier.padding(top = 10.dp)) {
+
+                    Text(
+                        text = "Problem:",
+                        fontWeight = FontWeight.Bold,
+                        color = Color(0xFF4A2C3A)
+                    )
+
+                    Text(
+                        text = "Students struggle to understand science experiments due to lack of interactive learning.",
+                        color = Color(0xFF4A2C3A)
+                    )
+
+                    Spacer(modifier = Modifier.height(8.dp))
+
+                    Text(
+                        text = "Impact:",
+                        fontWeight = FontWeight.Bold,
+                        color = Color(0xFF4A2C3A)
+                    )
+
+                    Text(
+                        text = "Low engagement leads to weak understanding of scientific concepts.",
+                        color = Color(0xFF4A2C3A)
+                    )
+
+                    Spacer(modifier = Modifier.height(8.dp))
+
+                    Text(
+                        text = "Solution:",
+                        fontWeight = FontWeight.Bold,
+                        color = Color(0xFF4A2C3A)
+                    )
+
+                    Text(
+                        text = "LabQuest provides interactive experiments and teacher interaction for better learning.",
+                        color = Color(0xFF4A2C3A)
+                    )
+                }
+            }
+        }
     }
 }
 
